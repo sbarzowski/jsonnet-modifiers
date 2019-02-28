@@ -187,7 +187,7 @@ true
 && std.assertEqual(
     [1,2,3,"!!!",5,6],
     local changeEveryNthPosition(n) = function(modifier) function(arr) 
-        std.mapWithIndex(function(index, elem) if index % n == 3 then modifier(elem) else elem, arr)
+        std.mapWithIndex(function(index, elem) if index % n == (n - 1) then modifier(elem) else elem, arr)
         ;
     m.change([changeEveryNthPosition(4)], "!!!")([1,2,3,4,5,6])
 )
