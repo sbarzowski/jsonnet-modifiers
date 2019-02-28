@@ -30,9 +30,9 @@ Assume you want to change the "xxx" to something else. It's not hard, but a litt
 obj + { a +: { b +: { c: std.mapWithIndex(function(i, e) if i == 0 then e + {d: "CHANGED"} else e, super.c)}}}
 ```
 
-This library provides instead an API like this:
+This library provides an API like this instead:
 ```
-m.set(["a", "b", "c", 0, "d"], "CHANGED")(obj)
+m.change(["a", "b", "c", 0, "d"], "CHANGED")(obj)
 ```
 
 ## Basic usage
@@ -43,18 +43,18 @@ local m = import 'modifiers.jsonnet'
 ```
 This line is omitted in all of the subsequent example. You probably want to use a longer name in more complicated programs.
 
-### Setting a field in an object
+### Changing a field in an object
 ```
-m.set(["a"], "after")({a: "before"})
+m.change(["a"], "after")({a: "before"})
 ```
 Result:
 ```
 {"a": "after"}
 ```
 
-### Setting a field in nested object
+### Changing a field in a nested object
 ```
-m.set(["a", "b"], "after")({a: {b: "before"})
+m.change(["a", "b"], "after")({a: {b: "before"})
 ```
 Result:
 ```
@@ -70,9 +70,9 @@ Result:
 {"a": 1}
 ```
 
-### Setting a field in all objects in an array
+### Changing a field in all objects in an array
 ```
-m.set([m.map, "a"], "foo")([
+m.change([m.map, "a"], "foo")([
     {"a": 0},
     {"a": 1},
     {"a": 2}
@@ -92,11 +92,11 @@ Result:
 There are two basic functions:
 
 ```
-m.set(selector_list, value)(input)
+m.change(selector_list, value)(input)
 m.changeWith(selector_list, func)(input)
 ```
 
-Function `m.set` simply sets every matched part of `input` to a `value`, while `m.changeWith` applies `func` to every matched part.
+Function `m.change` simply changes every matched part of `input` to a `value`, while `m.changeWith` applies `func` to every matched part.
 
 Selectors are basically generalized indices. Simple ones like strings (for indexing objects) and numbers (for indexing arrays) are possible. In particular more than one part of the value can be matched with some selectors.
 
@@ -120,8 +120,8 @@ local obj = {
 }
 m.changeWith(
     ["arr"], m.many([
-        m.set([0], "CHANGED-1"), 
-        m.set([2, "a"], "CHANGED-2")
+        m.change([0], "CHANGED-1"), 
+        m.change([2, "a"], "CHANGED-2")
     ])
 )(obj)
 ```
@@ -139,7 +139,7 @@ Results in:
 
 A new function `m.many` was introduced which sequentially applies modifications.
 
-See how when using `m.set` here there's no second pair of parentheses? This is because it is not applied yet to any particular input - it receives the right part through the selector and `m.many`.
+See how when using `m.change` here there's no second pair of parentheses? This is because it is not applied yet to any particular input - it receives the right part through the selector and `m.many`.
 
 ### Custom selector example - indexing even elements of an array
 
@@ -159,7 +159,7 @@ local changeEveryNthPosition(n) = function(modifier) function(arr)
     std.mapWithIndex(function(index, elem) if index % n == 3 then modifier(elem) else elem, arr)
     ;
 
-m.set([changeEveryNthPosition(4)], "!!!")([1,2,3,4,5,6])
+m.change([changeEveryNthPosition(4)], "!!!")([1,2,3,4,5,6])
 ```
 Results in:
 ```
@@ -177,7 +177,7 @@ local obj = {
     "foo": '{"a": {"b": "x"}}'
 };
 
-m.set(["foo", reparseJson, "a", "b"], 'CHANGED')(obj)
+m.change(["foo", reparseJson, "a", "b"], 'CHANGED')(obj)
 ```
  
 Results in:
@@ -225,7 +225,7 @@ There is a few things to know about using this library in its current state:
 
 Simply run:
 ```
-    jsonnet modifier-test.jsonnet
+jsonnet modifier-test.jsonnet
 ```
 
 If it prints `true` it's fine, if it complains with an error we have a problem.

@@ -48,19 +48,19 @@ true
 
 && std.assertEqual(
     {"foo": "aaa"},
-    m.set(["foo"], "aaa")({"foo": "bar"})
+    m.change(["foo"], "aaa")({"foo": "bar"})
 )
 
 
 && std.assertEqual(
     {"foo": "bar"},
     local obj = {"foo": "baz"};
-        m.set(["foo"], "bar")(obj)
+        m.change(["foo"], "bar")(obj)
 )
 
 && std.assertEqual(
     {foo: "{\n    \"foo2\": \"bar\"\n}"},
-    m.set(["foo", reparseJson, "foo2"], "bar")({foo: @'{"foo2": "baz"}'})
+    m.change(["foo", reparseJson, "foo2"], "bar")({foo: @'{"foo2": "baz"}'})
 )
 
 && std.assertEqual(
@@ -102,7 +102,7 @@ true
             }
         }
     };
-    m.set(["a", "b", "c", 1, "d"], "CHANGED")(obj)
+    m.change(["a", "b", "c", 1, "d"], "CHANGED")(obj)
 )
 
 
@@ -142,8 +142,8 @@ true
         "b"
     ],
     m.many([
-        m.set([0], "a"), 
-        m.set([2], "b")
+        m.change([0], "a"), 
+        m.change([2], "b")
     ])(["x", "x", "x"])
 )
 
@@ -153,7 +153,7 @@ true
         {"a": "foo"},
         {"a": "foo"}
     ],
-    m.set([m.map, "a"], "foo")([
+    m.change([m.map, "a"], "foo")([
         {"a": 0},
         {"a": 1},
         {"a": 2}
@@ -167,8 +167,8 @@ true
     };
     m.changeWith(
         ["arr"], m.many([
-            m.set([0], "CHANGED-1"), 
-            m.set([2, "a"], "CHANGED-2")
+            m.change([0], "CHANGED-1"), 
+            m.change([2, "a"], "CHANGED-2")
         ])
     )(obj)
 )
@@ -181,7 +181,7 @@ true
         "foo": '{"a": {"b": "x"}}'
     };
 
-    m.set(["foo", reparseJson, "a", "b"], 'CHANGED')(obj)
+    m.change(["foo", reparseJson, "a", "b"], 'CHANGED')(obj)
 )
 
 && std.assertEqual(
@@ -189,5 +189,5 @@ true
     local changeEveryNthPosition(n) = function(modifier) function(arr) 
         std.mapWithIndex(function(index, elem) if index % n == 3 then modifier(elem) else elem, arr)
         ;
-    m.set([changeEveryNthPosition(4)], "!!!")([1,2,3,4,5,6])
+    m.change([changeEveryNthPosition(4)], "!!!")([1,2,3,4,5,6])
 )

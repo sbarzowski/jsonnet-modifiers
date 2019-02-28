@@ -83,7 +83,7 @@ local build(ops) =
     foldr1(apply, ops)
     ;
 
-local set(ops, val) =
+local change(ops, val) =
     build(ops + [const(val)])
     ;
 
@@ -98,7 +98,7 @@ local changeWith(ops, fun) =
     many:: many,
     const:: const,
     build:: build,
-    set:: set,
+    change:: change,
     changeWith:: changeWith
 }
 
