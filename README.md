@@ -2,90 +2,89 @@
 
 **Project status: Proof of Concept**
 
-This library is intended to help with changing parts of big nested structures in Jsonnet.
+This library is intended to help with changing parts of big nested structures in Jsonnet. It requires a recent version of Jsonnet (>=0.12.1 recommended).
 
 ## Use case
 
 Let's say you have a complex object like this one:
 ```
-    local obj = {
-        a: {
-            b: {
-                c: [
-                    {
-                        d: "xxx"
-                    },
-                    {
-                        d: "yyy"
-                    }
-                ]
-            }
-        },
-        something: "foo",
-        moreThings: "bar"
-    };
+local obj = {
+    a: {
+        b: {
+            c: [
+                {
+                    d: "xxx"
+                },
+                {
+                    d: "yyy"
+                }
+            ]
+        }
+    },
+    something: "foo",
+    moreThings: "bar"
+};
 ```
 Assume you want to change the "xxx" to something else. It's not hard, but a little painful using the standard way below:
 ```
-    obj + { a +: { b +: { c: std.mapWithIndex(function(i, e) if i == 0 then e + {d: "CHANGED"} else e, super.c)}}}
+obj + { a +: { b +: { c: std.mapWithIndex(function(i, e) if i == 0 then e + {d: "CHANGED"} else e, super.c)}}}
 ```
 
 This library provides instead an API like this:
 ```
-    m.set(["a", "b", "c", 0, "d"], "CHANGED")(obj)
+m.set(["a", "b", "c", 0, "d"], "CHANGED")(obj)
 ```
-
 
 ## Basic usage
 
 To use the library you need to import it first:
 ```
-    local m = import 'modifiers.jsonnet'
+local m = import 'modifiers.jsonnet'
 ```
 This line is omitted in all of the subsequent example. You probably want to use a longer name in more complicated programs.
 
 ### Setting a field in an object
 ```
-    m.set(["a"], "after")({a: "before"})
+m.set(["a"], "after")({a: "before"})
 ```
 Result:
 ```
-    {"a": "after"}
+{"a": "after"}
 ```
 
 ### Setting a field in nested object
 ```
-    m.set(["a", "b"], "after")({a: {b: "before"})
+m.set(["a", "b"], "after")({a: {b: "before"})
 ```
 Result:
 ```
-    {"a": {"b": "after"}}
+{"a": {"b": "after"}}
 ```
 
 ### Modifying (in this example incrementing) a field
 ```
-    m.changeWith(["a"], function(x) x + 1)({"a": 0})
+m.changeWith(["a"], function(x) x + 1)({"a": 0})
 ```
 Result:
 ```
-    {"a": 1}
+{"a": 1}
 ```
 
 ### Setting a field in all objects in an array
 ```
-    m.set([m.map, "a"], "foo")([
-        {"a": 0},
-        {"a": 1},
-        {"a": 2}
-    ])
+m.set([m.map, "a"], "foo")([
+    {"a": 0},
+    {"a": 1},
+    {"a": 2}
+])
 ```
 Result:
 ```
-    [
-        {"a": "foo"},
-        {"a": "foo"},
-        {"a": "foo"}
-    ]
+[
+    {"a": "foo"},
+    {"a": "foo"},
+    {"a": "foo"}
+]
 ```
 
 
@@ -93,8 +92,8 @@ Result:
 There are two basic functions:
 
 ```
-    m.set(selector_list, value)(input)
-    m.changeWith(selector_list, func)(input)
+m.set(selector_list, value)(input)
+m.changeWith(selector_list, func)(input)
 ```
 
 Function `m.set` simply sets every matched part of `input` to a `value`, while `m.changeWith` applies `func` to every matched part.
@@ -103,9 +102,9 @@ Selectors are basically generalized indices. Simple ones like strings (for index
 
 Available selectors are currently included:
 
-    * m.override(str) - for indexing objects. You can pass just the string string as a shortcut. 
-    * m.elem(n) - for choosing one element in an array. You can pass just the number as a shortcut.
-    * m.map - indexing all values in an array at once
+* `m.override(str)` - for indexing objects. You can pass just the string string as a shortcut. 
+* `m.elem(n)` - for choosing one element in an array. You can pass just the number as a shortcut.
+* `m.map` - indexing all values in an array at once
 
 It is also possible (and easy) to create your own custom selectors. Selectors can be combined in any sequence to support any nested structure.
 
@@ -116,25 +115,25 @@ You may also wonder what is the deal with double parentheses, why input gets a s
 ### Multiple changes at once
 
 ```
-    local obj = {
-        arr: ["x", "x", {"a": "b"}]
-    }
-    m.changeWith(
-        ["arr"], m.many([
-            m.set([0], "CHANGED-1"), 
-            m.set([2, "a"], "CHANGED-2")
-        ])
-    )(obj)
+local obj = {
+    arr: ["x", "x", {"a": "b"}]
+}
+m.changeWith(
+    ["arr"], m.many([
+        m.set([0], "CHANGED-1"), 
+        m.set([2, "a"], "CHANGED-2")
+    ])
+)(obj)
 ```
 Results in:
 ```
-    {
-        "arr": [
-            "CHANGED-1",
-            "x",
-            {"a": "CHANGED-2"}
-        ]
-    },
+{
+    "arr": [
+        "CHANGED-1",
+        "x",
+        {"a": "CHANGED-2"}
+    ]
+},
 
 ```
 
@@ -145,9 +144,9 @@ See how when using `m.set` here there's no second pair of parentheses? This is b
 ### Custom selector example - indexing even elements of an array
 
 ```
-    local changeEvenPositions = function(modifier) function(arr) 
-        std.mapWithIndex(function(index, elem) if index % 2 == 0 then modifier(elem) else elem, arr)
-        ;
+local changeEvenPositions = function(modifier) function(arr) 
+    std.mapWithIndex(function(index, elem) if index % 2 == 0 then modifier(elem) else elem, arr)
+    ;
 
 m.changeWith([changeEvenPositions], function(x) x * 2)([1,2,3,4,5,6])
 ```
@@ -156,11 +155,11 @@ Please note that changeEvenPosition is curried - separate `function(modifier) fu
 ### Custom selector example - parametrizing - indexing every nth element of an array
 
 ```
-    local changeEveryNthPosition(n) = function(modifier) function(arr) 
-        std.mapWithIndex(function(index, elem) if index % n == 3 then modifier(elem) else elem, arr)
-        ;
+local changeEveryNthPosition(n) = function(modifier) function(arr) 
+    std.mapWithIndex(function(index, elem) if index % n == 3 then modifier(elem) else elem, arr)
+    ;
 
-    m.set([changeEveryNthPosition(4)], "!!!")([1,2,3,4,5,6])
+m.set([changeEveryNthPosition(4)], "!!!")([1,2,3,4,5,6])
 ```
 Results in:
 ```
@@ -170,23 +169,23 @@ Results in:
 ### Custom selector example - transparently indexing within serialized JSON
 
 ```
-    local reparseJson = function(modifier) function(str)
-        std.manifestJson(modifier(std.parseJson(str)))
-        ;
+local reparseJson = function(modifier) function(str)
+    std.manifestJson(modifier(std.parseJson(str)))
+    ;
 
-    local obj = {
-        "foo": '{"a": {"b": "x"}}'
-    };
+local obj = {
+    "foo": '{"a": {"b": "x"}}'
+};
 
-    m.set(["foo", reparseJson, "a", "b"], 'CHANGED')(obj)
+m.set(["foo", reparseJson, "a", "b"], 'CHANGED')(obj)
 ```
  
 Results in:
 
 ```
-    {
-        "foo": "{\n    \"a\": {\n        \"b\": \"CHANGED\"\n    }\n}"
-    }
+{
+    "foo": "{\n    \"a\": {\n        \"b\": \"CHANGED\"\n    }\n}"
+}
 ```
 
 
