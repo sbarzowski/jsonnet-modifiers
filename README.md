@@ -225,7 +225,7 @@ There is a few things to know about using this library in its current state:
 
 Simply run:
 ```
-jsonnet modifier-test.jsonnet
+jsonnet modifiers-test.jsonnet
 ```
 
 If it prints `true` it's fine, if it complains with an error we have a problem.

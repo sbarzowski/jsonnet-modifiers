@@ -1,4 +1,4 @@
-local m = import 'modifier.libsonnet';
+local m = import 'modifiers.libsonnet';
 
 // Proof-of-concept functionality, something I wouldn't include in the lib, but perhaps expect the user to write
 
