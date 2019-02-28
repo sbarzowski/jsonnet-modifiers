@@ -2,7 +2,7 @@
 
 **Project status: Proof of Concept**
 
-This library is intended to help with changing parts of big nested structures in Jsonnet. It requires a recent version of Jsonnet (>=0.12.1 recommended).
+This is a library for changing parts of big nested structures in Jsonnet. It requires a recent version of Jsonnet (>=0.12.1 recommended).
 
 ## Use case
 
