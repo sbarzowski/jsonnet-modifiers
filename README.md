@@ -217,8 +217,8 @@ It reminds me of Functors only that Selectors are various possible `fmap`s and i
 There is a few things to know about using this library in its current state:
 * It's currently a proof of concept. This means that I'm very interested in any feedback and that the API is likely to change.
 * When there is an error in the code using this library, the stack traces can sometimes be really awful (there's a lot of anonymous functions flying around and being applied at various points).
-* Some operations which are very easy with the library are quite slow. In particular Jsonnet changing an array element currently requires creating a shallow copy of the whole array. Similarly, modifying nested objects adds an overlay on every object on the path.
-* If you can structure your program so that the objects are built right to begin with, it's probably a better idea than this whole monkey patching we're doing here. However, sometimes you just can't avoid it and then this library can help you keep the code clean and readable.
+* Some operations which are very easy with the library are quite slow. In particular, in Jsonnet changing an array element currently requires creating a shallow copy of the whole array. Similarly, modifying nested objects adds an overlay on every object on the path.
+* If you can structure your program so that the objects are built correctly in one go, it's probably a better idea than this whole monkey patching we're doing here. However, sometimes you just can't avoid it and then this library can help you keep the code clean and readable.
 
 
 ## Running tests
